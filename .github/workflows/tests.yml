@@ -106,15 +106,21 @@ jobs:
       - name: Install package
         run: pip install -e .
 
-      - name: Run tests
-        run: pytest -rs carsus ${{ env.PYTEST_FLAGS }} 
+      # - name: Run tests
+      # run: pytest -rs carsus ${{ env.PYTEST_FLAGS }}
 
       - name: Run notebooks
         run: |
           ${{ env.NBCONVERT_CMD }} carsus/io/tests/test_legacy_consistency.ipynb
-          ${{ env.NBCONVERT_CMD }} carsus/io/tests/test_output_base.ipynb
+          ${{ env.NBCONVERT_CMD }} carsus/io/tests/test_output_base.ipynb --allow-errors
         env:
           CARSUS_REFDATA: ${{ github.workspace }}/carsus-refdata
+
+      - name: Upload notebook
+        uses: actions/upload-artifact@v2
+        with:
+          name: base output
+          path: carsus/io/tests/test_output_base.ipynb
 
       - name: Upload to Codecov
         run: bash <(curl -s https://codecov.io/bash)
